@@ -14,42 +14,48 @@ var source     = require('vinyl-source-stream'); // Used to stream bundle for fu
 var browserify = require('browserify');
 var watchify   = require('watchify');
 var reactify   = require('reactify');
+var babel      = require('gulp-babel');
+
+// registers global require hook that transpiles all commonjs required .es6, .es, .jsx and .js files
+// cannot use with gulp-jsx-coverage task creator
+// require('babel/register') 
 
 // Run Linting with JSHint
 // ==================================
 gulp.task('lint', function () {
   gulp.src(['./+(client|server)/**/!(build)/*.{js,jsx}'])
-    .pipe(react({ harmony: true }))
+    .pipe(babel())
     .on('error', console.log.bind(console))
     .pipe(jshint())
     .pipe(jshint.reporter( stylish ));
 });
 
 
-// Run Mocha Tests
-// ====================================
-gulp.task('mocha', function(){
-  return gulp.src(['./+(client|server)/**/!(build)/*.tests.{js,jsx}'])
-    .pipe(mocha({
-      reporter: 'spec',
-      compilers: ['jsx:test-helpers/jsxcompiler.js']
-    }))
-});
+// Run Unit Tests with Coverage
+// ==================================
+gulp.task('test', require('gulp-jsx-coverage').createTask({
+    src: ['client/**/*.tests.{jsx,js}'],  // will pass to gulp.src
+    istanbul: {                                      // will pass to istanbul
+        coverageVariable: '__MY_TEST_COVERAGE__',
+        exclude: /node_modules|\/test-helpers|\.tests\.(js|jsx)$/            // pattern to skip instrument
+    },
+    coverage: {
+        reporters: ['text', 'text-summary', 'json', 'lcov'], // list of istanbul reporters
+        directory: 'coverage'                        // will pass to istanbul reporters
+    },
+    mocha: {                                         // will pass to mocha
+        reporter: 'spec'
+    },
+    babel: {                                         // will pass to babel
+        sourceMap: 'inline'                          // get hints in HTML covarage reports
+    },
 
-
-// Run Tests and Generate Coverage Data
-// ====================================
-gulp.task('test', function (cb) {
-  gulp.src(['/client/app/components/app/app.component.jsx'])
-    .pipe( react({harmony: true}) )
-    .pipe(istanbul()) // Instrument files
-    .on('finish', function () {
-      gulp.src(['/client/app/components/app/app.component.tests.jsx'])
-        .pipe(mocha()) // Run Tests
-        .pipe(istanbul.writeReports()) // Creating the reports after tests runned
-        .on('end', cb);
-    });
-});
+    //optional
+    cleanup: function () {
+        // do extra tasks after test done
+        // EX: clean global.window when test with jsdom
+    }
+}));
 
 
 // Send Coverage Data to Coveralls

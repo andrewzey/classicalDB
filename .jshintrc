@@ -10,7 +10,7 @@
   "latedef": true,
   "newcap": true,
   "noarg": true,
-  "quotmark": "single",
+  "quotmark": false, /*necessary because JSX transpiles to JS using double quotes*/
   "regexp": true,
   "undef": true,
   "unused": true,
@@ -24,7 +24,6 @@
     "it": false,
     "pit": false,
     "expect": false,
-    /* React & JSX */
     "document": false
   }
 }

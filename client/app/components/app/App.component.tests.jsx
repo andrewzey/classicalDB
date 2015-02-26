@@ -7,7 +7,7 @@ require('../../../../test-helpers/testdom')('<html><body></body></html>');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 
-describe('App Component', function() {
+describe('App Component', ()=> {
   // Require React Component that we will be testing
   var App = require('./App.component.jsx');
 
