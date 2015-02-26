@@ -19,8 +19,6 @@
   "smarttabs": true,
   "white": true,
   "globals": {
-    /* Jest */
-    "jest": false,
     "describe": false,
     "beforeEach": false,
     "it": false,

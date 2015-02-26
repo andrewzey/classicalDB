@@ -11,11 +11,12 @@ var singleton = (function () {
 
     var Sequelize = require('sequelize');
     var config    = require('./environment');
+    var sequelize;
 
     if ('production' === config.env) {
       var match = config.postgres.uri.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
 
-      var sequelize = new Sequelize(match[5], match[1], match[2], {
+      sequelize = new Sequelize(match[5], match[1], match[2], {
         host: match[3],
         port: match[4],
         protocol: 'postgres',
@@ -25,7 +26,7 @@ var singleton = (function () {
 
     } else {
       // console.log(config.postgres);
-      var sequelize = new Sequelize(config.postgres.dbname, config.postgres.username, config.postgres.password, {
+      sequelize = new Sequelize(config.postgres.dbname, config.postgres.username, config.postgres.password, {
         host: 'localhost',
         port: 5432,
         protocol: 'postgres',
@@ -41,7 +42,7 @@ var singleton = (function () {
       sequelize: sequelize
     };
 
-  }
+  };
 
   return {
 
@@ -51,7 +52,7 @@ var singleton = (function () {
       }
       return instance;
     }
-  }
+  };
 
 
 })();

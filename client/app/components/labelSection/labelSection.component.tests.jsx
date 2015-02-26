@@ -1,11 +1,11 @@
 'use strict';
 
-jest.dontMock('../labelSection/labelSection.component.jsx');
+var expect = require('chai').expect;
 
 describe('labelSection test', function () {
 
   it('A should equal A', function () {
-    expect('A').toBe('A');
+    expect('A').to.equal('A');
   });
 
 });

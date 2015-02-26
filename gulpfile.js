@@ -4,7 +4,7 @@ var gulp       = require('gulp');
 var jshint     = require('gulp-jshint');
 var stylish    = require('jshint-stylish');
 var react      = require('gulp-react');
-var mocha      = require('gulp-mocha');
+var mocha      = require('gulp-spawn-mocha');
 var istanbul   = require('gulp-istanbul');
 var coveralls  = require('gulp-coveralls');
 var uglify     = require('gulp-uglify');
@@ -18,12 +18,23 @@ var reactify   = require('reactify');
 // Run Linting with JSHint
 // ==================================
 gulp.task('lint', function () {
-  gulp.src(['./!(coverage|node_modules|bower_components)/**/!(build)/*.{js,jsx}'])
-    .pipe( react({ harmony: true }) )
+  gulp.src(['./+(client|server)/**/!(build)/*.{js,jsx}'])
+    .pipe(react({ harmony: true }))
     .on('error', console.log.bind(console))
-    .pipe( jshint() )
-    .pipe( jshint.reporter( stylish ) );
-  });
+    .pipe(jshint())
+    .pipe(jshint.reporter( stylish ));
+});
+
+
+// Run Mocha Tests
+// ====================================
+gulp.task('mocha', function(){
+  return gulp.src(['./+(client|server)/**/!(build)/*.tests.{js,jsx}'])
+    .pipe(mocha({
+      reporter: 'spec',
+      compilers: ['jsx:test-helpers/jsxcompiler.js']
+    }))
+});
 
 
 // Run Tests and Generate Coverage Data
@@ -38,12 +49,6 @@ gulp.task('test', function (cb) {
         .pipe(istanbul.writeReports()) // Creating the reports after tests runned
         .on('end', cb);
     });
-});
-
-gulp.task('mocha', function(){
-  return gulp.src(['tests.jsx'])
-      .pipe( react({ harmony: true }) )
-      .pipe( mocha() )
 });
 
 
